@@ -1,0 +1,35 @@
+
+=== Backtesting PT sUSDat (0x1017e73ce9c219164ce841a980136eb023c55387) on chain 56 ===
+Capital: $10,000.00
+Timeframe: 1d
+
+Fetching historical data...
+Got 722 data points
+  Range: 2026-05-22T09:00:00.000Z → 2026-06-21T10:00:00.000Z
+
+Running backtest...
+
+============================================================
+RESULTS — PT sUSDat
+============================================================
+
+  Initial implied APY (entry):   13.00%
+  Final implied APY (exit):      14.98%
+  Deterministic payoff APY:      13.00%
+  Capital at maturity:           $11,300.00
+
+  Mark-to-market stats (if you had to exit early):
+    Final PnL:     -13.2432%
+    Worst PnL:     -15.1859%
+    Best PnL:      +0.0001%
+    Sharpe (ann.): -43.83
+
+  Data points: 722
+  Period: 2026-05-22T09:00:00.000Z → 2026-06-21T10:00:00.000Z
+
+============================================================
+
+  KEY INSIGHT: PT is a fixed-income instrument. The deterministic
+  payoff (above) is the headline. The mark-to-market story is only
+  relevant if you have to exit before maturity.
+

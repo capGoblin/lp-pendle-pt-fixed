@@ -1,0 +1,119 @@
+{
+  "strategy_id": "lp-pendle-pt-fixed-v1",
+  "venue": "pendle",
+  "chain": "bsc",
+  "chain_id": 56,
+  "instrument": "PT-sUSDat-2026-08-27",
+  "underlying_token": "sUSDat",
+  "pt_address": "0x23f9a497a5d4d54eaf5e03d94774f17dc1219745",
+  "yt_address": "0x11550114dc4c572e6c1eddfbcdbed9480f4847da",
+  "sy_address": "0x68930887e1318ef30653a4b7942ab07544ebed4d",
+  "market_address": "0x1017e73ce9c219164ce841a980136eb023c55387",
+  "expiry": "2026-08-27T00:00:00Z",
+  "time_to_maturity_days": 67,
+  "expected_fixed_apy": 0.1498,
+  "yield_floor_apy": 0.08,
+  "yield_ceiling_apy": 0.20,
+  "liquidity_usd": 2961210,
+  "pendle_emissions_apy": 0.0019,
+  "aggregated_apy": 0.1021,
+  "il_profile": "zero",
+  "data_as_of": "2026-06-21T10:00:00Z",
+  "agent_id": "sambar",
+  "data_inputs": [
+    {
+      "source": "pendle",
+      "endpoint": "https://api-v2.pendle.finance/core/v1/56/markets/active",
+      "purpose": "live PT market discovery"
+    },
+    {
+      "source": "pendle",
+      "endpoint": "https://api-v2.pendle.finance/core/v3/56/markets/{marketAddress}/historical-data?timeframe=1d",
+      "purpose": "backtest replay"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__search_cryptos",
+      "purpose": "resolve underlying to CMC id"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_crypto_quotes_latest",
+      "purpose": "spot price + 24h change for risk check"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_crypto_info",
+      "purpose": "project background, tags, links"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_crypto_technical_analysis",
+      "purpose": "RSI filter on underlying (skip if RSI>80)"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_crypto_latest_news",
+      "purpose": "catalyst + security incident check"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_global_metrics_latest",
+      "purpose": "regime tag (risk-on / risk-off / stress)"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_upcoming_macro_events",
+      "purpose": "avoid entry before macro catalysts"
+    }
+  ],
+  "x402_alternative": {
+    "endpoint": "https://pro.coinmarketcap.com/x402/v3/cryptocurrency/quotes/latest",
+    "mcp_endpoint": "https://mcp.coinmarketcap.com/x402/mcp",
+    "cost_per_call_usd": 0.01,
+    "currency": "USDC",
+    "network": "base",
+    "chain_id": 8453,
+    "use_case": "agentic-commerce proof in the demo"
+  },
+  "entry_rules": [
+    "market passes safety filter (liquidity >= 500K USD, time_to_maturity >= 14d, yield_floor >= 0.08)",
+    "underlying 24h change not <-15%",
+    "underlying RSI not > 80",
+    "no negative security news in last 30 days",
+    "no major macro event within 7 days of PT expiry"
+  ],
+  "exit_rules": [
+    "hold to maturity (PT redeems 1:1 for underlying at expiry)",
+    "roll early only if implied_apy across all open PTs in the same market > 0.20",
+    "emergency exit if underlying has a confirmed security exploit (any of: oracle failure, depeg, governance attack)"
+  ],
+  "rebalance_rule": "buy-and-hold to maturity; do not roll early unless implied_apy > 0.20 across all open PTs in the market",
+  "risk_guardrails": {
+    "min_liquidity_usd": 500000,
+    "min_time_to_maturity_days": 14,
+    "max_position_pct_of_liquidity": 0.02,
+    "yield_floor_apy": 0.08,
+    "exclude_underlyings_with_24h_drawdown_gt_pct": 0.15,
+    "max_rsi_underlying": 80,
+    "min_underlying_mcap_usd": 10000000
+  },
+  "position_sizing": {
+    "default_pct_of_capital": 0.05,
+    "max_pct_of_capital": 0.15,
+    "sizing_method": "fixed-fraction, scaled by liquidity depth (capped at 2% of pool TVL)"
+  },
+  "expected_outcomes": {
+    "deterministic_redemption_apy": 0.1498,
+    "best_case_apy": 0.19,
+    "worst_case_apy": 0.08,
+    "sharpe_ratio_estimate": 9.5,
+    "max_drawdown_estimate_mark_to_market": -0.04
+  },
+  "demo_metadata": {
+    "title": "Best fixed-yield PT on BSC right now",
+    "capital_usd": 10000,
+    "expected_profit_usd_at_maturity": 275.34,
+    "key_claim": "Zero IL, fixed yield locked in at entry, 67 days to redemption"
+  }
+}
