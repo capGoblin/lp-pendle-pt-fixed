@@ -40,6 +40,32 @@ on Base for CMC data access.
 
 ---
 
+## 📮 Dorahacks submission details
+
+**This README IS the submission writeup.** Judges reading the GitHub repo or the Dorahacks
+form get the same story. No separate files. No contradictions.
+
+| Field | Value |
+|---|---|
+| **Project name** | `lp-pendle-pt-fixed` |
+| **Display name** | Agent-Native Fixed-Yield DeFi Strategy Library |
+| **Track** | 2 — Strategy Skills |
+| **Sponsors used** | CoinMarketCap (primary), BNB Chain, Trust Wallet (TWAK-compatible spec) |
+| **GitHub repo** | https://github.com/capgoblin/lp-pendle-pt-fixed |
+| **Live demo** | `python3 lp-pendle-pt-fixed/backtest/run_backtest.py --market 0x1017e73...` |
+| **License** | MIT |
+| **Submission date** | 2026-06-21 12:00 UTC |
+
+**Dorahacks form fields, pre-filled:**
+
+- **Project link:** https://github.com/capgoblin/lp-pendle-pt-fixed
+- **Track:** Strategy Skills (Track 2)
+- **Short description (≤256 chars):** `lp-pendle-pt-fixed: An agent-native DeFi skill that recommends Pendle Principal Token buy-and-hold positions on BSC. 14.98% APY, zero IL, backtestable spec, x402 demo.`
+- **Long description:** *(paste everything from "🚀 TL;DR" through "🗺️ Roadmap")*
+- **Sponsor capabilities used:** CoinMarketCap (Agent Hub + Skills Marketplace + x402), BNB Chain (BSC live PT contracts), Trust Wallet (TWAK-compatible spec format)
+
+---
+
 ## 📦 What's in the repo
 
 ```
@@ -367,3 +393,9 @@ MIT — matches the official `openCMC/skills-for-ai-agents-by-CoinMarketCap` rep
 - **GitHub:** https://github.com/capgoblin/lp-pendle-pt-fixed
 - **Submission date:** 2026-06-21 12:00 UTC
 - **Track:** 2 (Strategy Skills)
+
+---
+
+<sub>Built for the BNB Hack: AI Trading Agent Edition (CoinMarketCap × Trust Wallet × BNB Chain).
+31 files. 6 git commits. MIT licensed. Live-validated against Pendle's public API and the
+CoinMarketCap MCP.</sub>
