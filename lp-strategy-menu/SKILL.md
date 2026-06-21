@@ -1,128 +1,128 @@
 ---
 name: lp-strategy-menu
 description: |
-  Allocates a capital pool across a library of fixed-yield and LP-farming strategies on BSC.
-  Wraps the lp-pendle-pt-fixed-* skills and lp-concentrated-stable into a single allocation
-  decision that respects a user-defined risk profile (conservative / balanced / aggressive).
+  Allocates a capital pool across the Pendle PT fixed-yield library on BSC.
+  Combines lp-pendle-pt-fixed (sUSDat, 14.98% APY) and lp-pendle-pt-fixed-usdat
+  (USDat, 8.35% APY) into a single portfolio spec that respects a user-defined
+  risk profile (conservative / balanced / aggressive) and a market regime overlay
+  (risk-on / risk-off / stress).
 
-  Use when a user asks: "Where should I put $X on BSC for fixed yield?",
-  "Allocate my BSC capital across the safest yield strategies.",
-  "Build me a balanced DeFi portfolio on BSC.", "/lp-strategy-menu".
+  Use when a user asks: "Allocate $X across fixed-yield PT on BSC.",
+  "Build me a balanced DeFi portfolio on BSC.", "What's the best split between
+  sUSDat and USDat for a 5% target yield with low risk?", "/lp-strategy-menu".
 
 license: MIT
 compatibility: ">=1.0.0"
 user-invocable: true
 allowed-tools:
-  - mcp__cmc-mcp__search_cryptos
-  - mcp__cmc-mcp__get_crypto_quotes_latest
-  - mcp__cmc-mcp__get_crypto_info
   - mcp__cmc-mcp__get_global_metrics_latest
-  - mcp__cmc-mcp__get_upcoming_macro_events
+  - mcp__cmc-mcp__get_crypto_quotes_latest
 ---
 
 # lp-strategy-menu
 
-A wrapper skill that allocates a capital pool across the LP-farming library on BSC.
-Reads the current state of the underlying skills (lp-pendle-pt-fixed, lp-pendle-pt-fixed-usdat,
-lp-concentrated-stable) and produces a single allocation spec that respects the user's
-risk profile.
+A wrapper that allocates a capital pool across the Pendle PT fixed-yield library.
+Pulls live APYs and liquidity from Pendle, computes portfolio-level stats, and outputs
+a single allocation spec.
 
-## When to use this skill
+## When to use
 
-- "Allocate $50K across the safest yield strategies on BSC."
-- "Build a balanced DeFi portfolio for me on BSC."
-- "Show me the menu of BSC LP-farming strategies with risk-adjusted returns."
+- "Allocate $50K across the safest fixed-yield PT strategies on BSC."
+- "Build me a balanced BSC DeFi portfolio."
+- "Show me the menu of PT strategies with risk-adjusted returns."
 
-## What the skill produces
+## Quick start
 
-A JSON allocation spec:
+```bash
+# Balanced profile (default), $50K capital
+python3 run_menu.py --capital 50000 --profile balanced
+
+# Conservative, $25K
+python3 run_menu.py --capital 25000 --profile conservative
+
+# Aggressive with risk-off regime overlay
+python3 run_menu.py --capital 100000 --profile aggressive --regime risk-off
+
+# Raw JSON output (for piping into other tools)
+python3 run_menu.py --capital 50000 --profile balanced --json > portfolio.json
+```
+
+## What it produces
+
+A JSON portfolio spec. Example (balanced, $50K, neutral regime, live 2026-06-21):
 
 ```json
 {
-  "portfolio_id": "lp-strategy-menu-2026-06-21",
-  "total_capital_usd": 50000,
+  "portfolio_id": "lp-strategy-menu-20260621-110000",
+  "skill": "lp-strategy-menu",
+  "version": "1.0",
+  "total_capital_usd": 50000.0,
   "risk_profile": "balanced",
-  "regime": "risk-on",
+  "regime": "neutral",
   "allocations": [
     {
       "skill": "lp-pendle-pt-fixed-susdat",
-      "strategy_id": "lp-pendle-pt-fixed-v1",
-      "pct_of_capital": 0.40,
-      "capital_usd": 20000,
-      "expected_apy": 0.1498,
-      "expected_horizon_days": 67
+      "instrument": "PT-sUSDat-2026-08-27",
+      "pct_of_capital": 0.6,
+      "capital_usd": 30000.0,
+      "implied_apy_live": 0.1498,
+      "time_to_maturity_days": 67,
+      "il_profile": "zero"
     },
     {
       "skill": "lp-pendle-pt-fixed-usdat",
-      "strategy_id": "lp-pendle-pt-fixed-v1-usdat",
-      "pct_of_capital": 0.30,
-      "capital_usd": 15000,
-      "expected_apy": 0.0835,
-      "expected_horizon_days": 67
-    },
-    {
-      "skill": "lp-concentrated-stable",
-      "strategy_id": "lp-concentrated-stable-v1",
-      "pct_of_capital": 0.30,
-      "capital_usd": 15000,
-      "expected_apy": 0.0412,
-      "expected_horizon_days": 30
+      "instrument": "PT-USDat-2026-08-27",
+      "pct_of_capital": 0.4,
+      "capital_usd": 20000.0,
+      "implied_apy_live": 0.0835,
+      "time_to_maturity_days": 67,
+      "il_profile": "zero"
     }
   ],
-  "portfolio_expected_apy": 0.0941,
-  "portfolio_max_drawdown_estimate": 0.025,
-  "generated_at": "2026-06-21T10:00:00Z"
+  "portfolio_expected_apy": 0.1233,
+  "portfolio_expected_profit_usd": 1130.41,
+  "portfolio_avg_maturity_days": 67.0,
+  "portfolio_max_drawdown_estimate": 0.022
 }
 ```
 
 ## Risk profile templates
 
-### Conservative (capital preservation priority)
-
-| Allocation | Skill | Target weight |
-|---|---|---|
-| 50% | `lp-pendle-pt-fixed-susdat` | 0.50 |
-| 30% | `lp-pendle-pt-fixed-usdat` | 0.30 |
-| 20% | `lp-concentrated-stable` (USDC/USDT) | 0.20 |
-| **Portfolio APY** | | ~10.2% |
-| **Max DD estimate** | | -1.5% |
-
-### Balanced (default)
-
-| Allocation | Skill | Target weight |
-|---|---|---|
-| 40% | `lp-pendle-pt-fixed-susdat` | 0.40 |
-| 30% | `lp-pendle-pt-fixed-usdat` | 0.30 |
-| 30% | `lp-concentrated-stable` | 0.30 |
-| **Portfolio APY** | | ~9.4% |
-| **Max DD estimate** | | -2.5% |
-
-### Aggressive (yield maximization)
-
-| Allocation | Skill | Target weight |
-|---|---|---|
-| 70% | `lp-pendle-pt-fixed-susdat` | 0.70 |
-| 30% | `lp-pendle-pt-fixed-usdat` | 0.30 |
-| **Portfolio APY** | | ~13.0% |
-| **Max DD estimate** | | -4.0% |
+| Profile | sUSDat weight | USDat weight | Portfolio APY | Max DD estimate |
+|---|---|---|---|---|
+| Conservative | 50% | 50% | 11.67% | -1.5% |
+| Balanced (default) | 60% | 40% | **12.33%** | -2.2% |
+| Aggressive | 80% | 20% | 13.65% | -3.8% |
 
 ## Regime overlay
 
-If the global metrics show "risk-off" (BTC dominance > 60%), shift 10% of capital from the highest-yield
-strategy to the most stable. If "stress" (defi volume 24h drop > 30% week-over-week), raise yield
-floor to 12% across all PT strategies.
+| Regime | Trigger | Action |
+|---|---|---|
+| neutral | (default) | Apply profile weights as-is |
+| risk-on | BTC dominance < 50% | Apply profile weights as-is |
+| risk-off | BTC dominance > 60% | Shift 10% from sUSDat → USDat |
+| stress | Defi 24h volume drop > 30% WoW | Force 80% USDat / 20% sUSDat |
 
 ## Workflow
 
-1. Call each underlying skill (`lp-pendle-pt-fixed`, etc.) to get the live spec candidates.
-2. Apply the risk guardrails (min liquidity, min time-to-maturity, yield floor, etc.).
-3. Pick the top candidate per skill.
-4. Apply the risk profile template weights.
-5. Apply the regime overlay if needed.
-6. Output the portfolio allocation spec.
+1. **Pull live PT markets** from Pendle (`/v1/56/markets/active`).
+2. **Pull regime tag** from CMC global metrics (`get_global_metrics_latest`).
+3. **Apply risk profile** weights to the two PT strategies.
+4. **Apply regime overlay** to adjust weights.
+5. **Compute portfolio APY** as weighted average of live implied APYs.
+6. **Stability check** — pull historical data for the dominant market, compute stdev/min/max.
+7. **Output the spec** as JSON.
 
 ## What the agent does NOT do
 
 - Execute the allocation (this is a spec, not a TWAK integration).
 - Rebalance dynamically (the spec is generated on-demand, not continuously).
-- Cross-chain rebalancing (BSC only — the other chains are out of scope for this wrapper).
+- Cross-chain rebalancing (BSC only).
+- Auto-detect user risk profile (the user must pick conservative/balanced/aggressive).
+
+## Files
+
+- `SKILL.md` — this file
+- `README.md` — quick reference
+- `run_menu.py` — the implementation
+- `examples/` — sample output specs

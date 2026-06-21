@@ -1,0 +1,35 @@
+
+=== lp-strategy-menu v1.0 ===
+Capital: $50,000.00
+Risk profile: balanced
+Regime: neutral
+
+Pulling live PT market data from Pendle ...
+
+============================================================
+PORTFOLIO — lp-strategy-menu-20260621-120935
+============================================================
+
+  Total capital:           $50,000.00
+  Risk profile:            balanced
+  Regime:                  neutral
+  Expected portfolio APY:  12.31%
+  Expected profit:         $1,129.74
+  Avg maturity:            67 days
+  Max drawdown estimate:   2.2%
+
+  Allocations:
+    - PT-sUSDat-2026-08-27             60.0%  $ 30,000.00  (live APY: 14.98%)
+    - PT-USDat-2026-08-27              40.0%  $ 20,000.00  (live APY: 8.30%)
+
+  APY stability (dominant: sUSDat):
+    n = 724 hourly observations
+    mean = 14.48%, stdev = 0.6544%
+    range = [13.00%, 15.33%]
+
+============================================================
+
+  KEY INSIGHT: both legs are PT — zero IL, deterministic payoff.
+  Portfolio APY is the weighted average. The wrapper just chooses
+  how to split the capital between the two legs based on risk profile.
+

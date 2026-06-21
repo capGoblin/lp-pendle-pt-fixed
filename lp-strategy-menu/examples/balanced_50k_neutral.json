@@ -1,0 +1,86 @@
+
+=== lp-strategy-menu v1.0 ===
+Capital: $50,000.00
+Risk profile: balanced
+Regime: neutral
+
+Pulling live PT market data from Pendle ...
+{
+  "portfolio_id": "lp-strategy-menu-20260621-120934",
+  "skill": "lp-strategy-menu",
+  "version": "1.0",
+  "total_capital_usd": 50000.0,
+  "risk_profile": "balanced",
+  "regime": "neutral",
+  "regime_note": "Weights applied as-is",
+  "allocations": [
+    {
+      "skill": "lp-pendle-pt-fixed-susdat",
+      "strategy_id": "lp-pendle-pt-fixed-v1-susdat",
+      "venue": "pendle",
+      "chain": "bsc",
+      "chain_id": 56,
+      "instrument": "PT-sUSDat-2026-08-27",
+      "market_address": "0x1017e73ce9c219164ce841a980136eb023c55387",
+      "pt_address": "0x23f9a497a5d4d54eaf5e03d94774f17dc1219745",
+      "expiry": "2026-08-27T00:00:00Z",
+      "time_to_maturity_days": 67,
+      "implied_apy_live": 0.1498441872960048,
+      "pct_of_capital": 0.6,
+      "capital_usd": 30000.0,
+      "expected_horizon_days": 67,
+      "il_profile": "zero",
+      "liquidity_usd": 2961259.011388446
+    },
+    {
+      "skill": "lp-pendle-pt-fixed-usdat",
+      "strategy_id": "lp-pendle-pt-fixed-v1-usdat",
+      "venue": "pendle",
+      "chain": "bsc",
+      "chain_id": 56,
+      "instrument": "PT-USDat-2026-08-27",
+      "market_address": "0x9757834d0b31aa820b85f68705117691207152d9",
+      "pt_address": "0x3519f72144daae5ae933fac1bf91f8da57664d24",
+      "expiry": "2026-08-27T00:00:00Z",
+      "time_to_maturity_days": 67,
+      "implied_apy_live": 0.08296092112593789,
+      "pct_of_capital": 0.4,
+      "capital_usd": 20000.0,
+      "expected_horizon_days": 67,
+      "il_profile": "zero",
+      "liquidity_usd": 2773812.41231606
+    }
+  ],
+  "portfolio_expected_apy": 0.1231,
+  "portfolio_expected_profit_usd": 1129.74,
+  "portfolio_avg_maturity_days": 67.0,
+  "portfolio_max_drawdown_estimate": 0.022,
+  "data_inputs": [
+    {
+      "source": "pendle",
+      "endpoint": "https://api-v2.pendle.finance/core/v1/56/markets/active",
+      "purpose": "live market snapshot"
+    },
+    {
+      "source": "pendle",
+      "endpoint": "https://api-v2.pendle.finance/core/v3/56/markets/{addr}/historical-data",
+      "purpose": "APY stability check (n=722 for sUSDat)"
+    },
+    {
+      "source": "cmc-mcp",
+      "tool": "mcp__cmc-mcp__get_global_metrics_latest",
+      "purpose": "regime tag (risk-on/off/stress)"
+    }
+  ],
+  "stability_check": {
+    "dominant_market": "sUSDat",
+    "implied_apy_stdev": 0.006543976909741717,
+    "implied_apy_min": 0.12999996332036856,
+    "implied_apy_max": 0.15327657136537742,
+    "implied_apy_mean": 0.14476720828963194,
+    "n_observations": 724
+  },
+  "generated_at": "2026-06-21T12:09:34.314444+00:00",
+  "generator": "lp-strategy-menu v1.0",
+  "next_action": "hand this spec to a backtester, an allocation engine, or a TWAK execution layer"
+}

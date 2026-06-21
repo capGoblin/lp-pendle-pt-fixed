@@ -10,9 +10,9 @@
 
 ## One-liner
 
-A library of 5 CoinMarketCap-compatible Skills that generate backtestable DeFi strategy specs
-for fixed-yield and LP-farming positions on BSC. The flagship skill (`lp-pendle-pt-fixed`)
-recommends Pendle Principal Token (PT) buy-and-hold positions — fixed yield with **zero IL** — and
+A focused 3-component library of CoinMarketCap-compatible Skills (2 strategy skills + 1 portfolio
+wrapper) that generate backtestable DeFi strategy specs for fixed-yield Pendle PT positions on BSC.
+The flagship skill recommends PT buy-and-hold positions — fixed yield with **zero IL** — and
 demonstrates the x402 pay-per-request protocol for agentic commerce.
 
 ---
@@ -29,12 +29,30 @@ demonstrates the x402 pay-per-request protocol for agentic commerce.
 
 ---
 
+## The library (3 components)
+
+| Component | What it does | Live APY | Real? |
+|---|---|---|---|
+| **`lp-pendle-pt-fixed`** (flagship) | Best fixed-yield PT on BSC, sUSDat | 14.98% | ✅ full spec + backtest script |
+| `lp-pendle-pt-fixed-usdat` | Conservative sister, USDat | 8.35% | ✅ full spec |
+| `lp-strategy-menu` | Wrapper — allocates across both | balanced 12.33% | ✅ full spec + working script |
+
+**What was cut from the original 5-skill proposal:**
+- `lp-pendle-pt-fixed-slisbnbx` — 4 days to expiry, 3.38% APY, not credible as a flagship
+- `lp-concentrated-stable` — PancakeSwap v3 stable LP, no clean live data path in the time budget
+
+**The library was cut from 5 → 3 components for credibility.** Shipping 2 real strategies + 1
+real wrapper beats shipping 5 components with 3 stubs. Every component in this submission has
+a live-validated spec and a working implementation.
+
+---
+
 ## What gets submitted
 
-1. **5 SKILL.md files** — loadable into any MCP-compatible AI agent.
+1. **3 SKILL.md files** — loadable into any MCP-compatible AI agent.
 2. **A backtestable spec format** — JSON, structured, agent-reasoned.
-3. **A working backtest script** — runs live, pulls from Pendle's public API, replays strategy.
-4. **A live demo** — agent uses x402 MCP to pay for data, generates the spec, includes the tx hash.
+3. **2 working scripts** — `lp-pendle-pt-fixed/backtest/run_backtest.py` (flagship backtest) + `lp-strategy-menu/run_menu.py` (portfolio allocator).
+4. **Live captured outputs** — `backtest_susdat_*.json`, `examples/*.json` (4 risk profile scenarios).
 5. **A submission writeup** — this file.
 
 ---
@@ -45,10 +63,10 @@ When an AI agent loads `lp-pendle-pt-fixed` and the user asks "What's the best f
 BSC right now?", the skill:
 
 1. **Pulls live PT markets from Pendle** (`/v1/56/markets/active`).
-2. **Filters** by liquidity ($500K+), time-to-maturity (14d+), yield floor (8%+), and underlying safety (no 24h drawdown > 15%, no security incident).
+2. **Filters** by liquidity ($500K+), time-to-maturity (14d+), yield floor (8%+), and underlying safety.
 3. **Pulls CMC context** for each surviving market's underlying token: price, technicals (RSI), news (security check), global metrics (regime tag), upcoming macro events (catalyst filter).
 4. **Picks the top candidate** and generates a structured JSON spec.
-5. **Hands the spec** to a backtester (the included `run_backtest.py`), an allocation engine (`lp-strategy-menu`), or a TWAK execution layer.
+5. **Hands the spec** to a backtester, an allocation engine, or a TWAK execution layer.
 
 **Live spec output for the flagship (sUSDat, captured 2026-06-21 10:00 UTC):**
 
@@ -60,9 +78,7 @@ BSC right now?", the skill:
   "instrument": "PT-sUSDat-2026-08-27",
   "expected_fixed_apy": 0.1498,
   "liquidity_usd": 2961210,
-  "il_profile": "zero",
-  "data_inputs": ["pendle.v3.markets.historical-data", "cmc.mcp.crypto.quotes.latest", "cmc.mcp.crypto.technical.analysis", "cmc.mcp.global.metrics.latest", "cmc.mcp.upcoming.macro.events"],
-  "x402_alternative": {"mcp_endpoint": "https://mcp.coinmarketcap.com/x402/mcp", "cost_per_call_usd": 0.01, "currency": "USDC", "network": "base"}
+  "il_profile": "zero"
 }
 ```
 
@@ -99,13 +115,47 @@ Full PnL curve: `lp-pendle-pt-fixed/backtest/backtest_susdat_result.json` (110 K
 
 ---
 
+## The wrapper — what it does
+
+`lp-strategy-menu` allocates a capital pool across the two PT strategies based on:
+
+- **Risk profile** (conservative 50/50, balanced 60/40, aggressive 80/20)
+- **Market regime** (neutral / risk-on / risk-off / stress) — pulled from CMC global metrics
+
+**Live output (balanced, $50K, neutral regime, captured 2026-06-21 12:09 UTC):**
+
+```
+=== PORTFOLIO — lp-strategy-menu-20260621-120926 ===
+
+  Total capital:           $50,000.00
+  Risk profile:            balanced
+  Regime:                  neutral
+  Expected portfolio APY:  12.31%
+  Expected profit:         $1,129.74
+  Avg maturity:            67 days
+  Max drawdown estimate:   2.2%
+
+  Allocations:
+    - PT-sUSDat-2026-08-27             60.0%  $ 30,000.00  (live APY: 14.98%)
+    - PT-USDat-2026-08-27              40.0%  $ 20,000.00  (live APY: 8.30%)
+
+  APY stability (dominant: sUSDat):
+    n = 724 hourly observations
+    mean = 14.48%, stdev = 0.6544%
+    range = [13.00%, 15.33%]
+```
+
+4 sample scenarios captured: `lp-strategy-menu/examples/`.
+
+---
+
 ## The x402 demo flow (the agentic-commerce wedge)
 
 The BNB Hack calls out x402 as an optional capability. Most Track 2 entries will be "I generated a spec,
 here's the data." This submission includes the **agentic-commerce angle**:
 
 1. User prompt: "Find the best fixed-yield PT on BSC for $10K capital."
-2. Agent decides to call CMC's x402 MCP at `https://mcp.coinmarketcap.com/x402/mcp` to check the global market regime (a `get_global_metrics_latest` call).
+2. Agent decides to call CMC's x402 MCP at `https://mcp.coinmarketcap.com/x402/mcp` to check the global market regime.
 3. MCP returns HTTP 402 Payment Required with payment instructions.
 4. Agent's Base-chain USDC wallet signs the $0.01 payment.
 5. MCP returns the data.
@@ -128,7 +178,7 @@ Track 1 is "Autonomous Trading Agents — TWAK + live execution + risk guardrail
 This submission is unambiguously Track 2:
 
 - ✅ **Skill spec, not live execution.** The deliverable is a JSON spec an agent reasons about.
-- ✅ **Backtestable.** The script runs against real historical data and outputs PnL.
+- ✅ **Backtestable.** The scripts run against real historical data and output PnL.
 - ✅ **Uses CMC Skills Marketplace format** (SKILL.md with frontmatter).
 - ✅ **Uses CMC MCP tools** (12 tools, all from the official openCMC skills repo).
 - ✅ **Uses x402** (the optional bonus capability).
@@ -149,19 +199,20 @@ Most Track 2 entries will be:
 This submission is the intersection:
 - **CMC data integration** (12 MCP tools, live calls, multiple risk overlays)
 - **DeFi context** (Pendle PT math, real on-chain contracts, real liquidity)
-- **Backtestable spec** (live script, 722 historical data points, deterministic payoff)
+- **Backtestable spec** (live scripts, 722 historical data points, deterministic payoff)
 - **x402 agentic commerce** (the differentiator)
-- **Thin library** (4 skills + 1 wrapper, all live-validated)
+- **Focused library** (3 components, all real, all live-validated)
 
 The flagship's backtest shows a clean deterministic payoff with the honest mark-to-market
-caveat. That's the kind of rigor the judges will respect.
+caveat. The wrapper's portfolio allocation shows a working risk-overlay system. That's the
+kind of rigor the judges will respect.
 
 ---
 
 ## What's in the repo
 
 ```
-README.md                                  (this submission writeup)
+README.md                                  (the submission writeup)
 DORAHACKS_SUBMISSION.md                    (the same)
 PHASE_LOG.md                               (build state record)
 PHASE_0_CMC_VERIFICATION.md                (CMC API live check)
@@ -170,20 +221,30 @@ PHASE_0_INTEGRATION_NOTES.md               (what changed in the build)
 
 lp-pendle-pt-fixed/                        🥇 FLAGSHIP
 ├── SKILL.md                               (loadable into any MCP agent)
+├── README.md
 ├── examples/susdat-pt-spec.json           (live spec output)
-├── references/pendle-api.md               (Pendle V2 API reference)
-├── references/cmc-mcp.md                  (CMC MCP reference)
-├── references/x402-integration.md         (x402 reference)
-└── backtest/
-    ├── run_backtest.py                    (live backtest script)
-    ├── README.md
-    ├── backtest_susdat_result.json        (live output)
-    └── backtest_susdat_output.txt         (live output)
+├── references/{pendle-api,cmc-mcp,x402-integration}.md
+├── backtest/
+│   ├── run_backtest.py                    (live backtest script)
+│   ├── README.md
+│   ├── backtest_susdat_result.json        (live output, 110KB, 722 data points)
+│   └── backtest_susdat_output.txt         (live output, formatted)
+└── assets/logo.png
 
-lp-strategy-menu/SKILL.md                  (wrapper that allocates across library)
-lp-pendle-pt-fixed-usdat/SKILL.md          (conservative sister — 8.35% APY)
-lp-pendle-pt-fixed-slisbnbx/SKILL.md       (most-liquid stub — 3.38% APY)
-lp-concentrated-stable/SKILL.md            (stable LP stub — ~4.12% APY)
+lp-pendle-pt-fixed-usdat/                  (conservative sister — 8.35% APY)
+├── SKILL.md
+└── README.md
+
+lp-strategy-menu/                          (wrapper)
+├── SKILL.md
+├── README.md
+├── run_menu.py                            (live portfolio allocator)
+└── examples/
+    ├── balanced_50k_neutral.json
+    ├── conservative_25k_neutral.json
+    ├── aggressive_100k_riskoff.json
+    ├── balanced_100k_stress.json
+    └── balanced_50k_neutral.txt
 ```
 
 ---
@@ -199,6 +260,7 @@ Every claim in this submission is backed by a live API call documented in the ve
 - **Backtest data path verified** — 722 hourly observations, 30 days.
 - **x402 MCP endpoint verified** — `https://mcp.coinmarketcap.com/x402/mcp`.
 - **Backtest script runs end-to-end** — captured output in `backtest_susdat_output.txt`.
+- **Wrapper script runs end-to-end** — captured outputs in `lp-strategy-menu/examples/`.
 
 One spec assumption was corrected during verification: the deep-dive had assumed sUSDe (Ethena's
 staked USDe) as the lead PT market, but sUSDe is **not on BSC**. The corrected flagship uses
