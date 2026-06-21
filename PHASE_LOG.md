@@ -44,10 +44,21 @@ Files that will be added as phase 1+ lands:
   - [x] CMC AI Agent Hub endpoint verification
   - [x] Pendle live PT market API verification
   - [x] Integration notes (what to change in the build)
-- [ ] Phase 1: Repo scaffold + flagship SKILL.md
-- [ ] Phase 2: Flagship backtest
-- [ ] Phase 3: Wrapper + thin sister
-- [ ] Phase 4: Demo + Dorahacks submission
+- [x] **Phase 1: Repo scaffold + flagship SKILL.md** (DONE 2026-06-21 10:35 UTC, ~20m)
+  - [x] `lp-pendle-pt-fixed/` repo (flagship) — SKILL.md, examples/, references/, backtest/
+  - [x] `lp-pendle-pt-fixed-usdat/` (conservative sister)
+  - [x] `lp-pendle-pt-fixed-slisbnbx/` (most-liquid stub)
+  - [x] `lp-concentrated-stable/` (stable LP stub)
+  - [x] `lp-strategy-menu/` (wrapper)
+  - [x] Top-level README.md + DORAHACKS_SUBMISSION.md
+  - [x] Git initialised, 2 commits
+  - [x] Clean tarball at /root/.openclaw/workspace/bnb-hack-submission-clean.tar.gz (90KB, 33 files)
+- [x] **Phase 2: Flagship backtest** (DONE 2026-06-21 10:31 UTC)
+  - [x] Backtest script runs end-to-end
+  - [x] 722 hourly observations for sUSDat
+  - [x] Live output captured in backtest_susdat_output.txt + backtest_susdat_result.json
+- [x] **Phase 3: Wrapper + thin sisters** (DONE — see Phase 1)
+- [ ] **Phase 4: Demo + Dorahacks submission** (DORAHACKS_SUBMISSION.md done; live demo recording requires operator action)
 
 ## Phase 0 — key findings (operator 1-liner)
 
