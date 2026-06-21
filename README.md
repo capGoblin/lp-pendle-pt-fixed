@@ -4,17 +4,14 @@
 
 ![Backtest](https://github.com/capgoblin/lp-pendle-pt-fixed/actions/workflows/backtest.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
-![Track 2](https://img.shields.io/badge/BNB%20Hack-Track%202-blue)
-![Sponsor: CoinMarketCap](https://img.shields.io/badge/Sponsor-CoinMarketCap-00d4ff)
-![Sponsor: BNB Chain](https://img.shields.io/badge/Sponsor-BNB%20Chain-f3ba2f)
-![Sponsor: Trust Wallet](https://img.shields.io/badge/Sponsor-Trust%20Wallet-3375bb)
+![CoinMarketCap](https://img.shields.io/badge/Sponsor-CoinMarketCap-00d4ff)
+![BNB Chain](https://img.shields.io/badge/Sponsor-BNB%20Chain-f3ba2f)
+![Trust Wallet](https://img.shields.io/badge/Sponsor-Trust%20Wallet-3375bb)
 
 > **BNB Hack: AI Trading Agent Edition — Track 2 (Strategy Skills)**
-> Submission: 2026-06-21 · Operator: capGoblin · Built with: Sambar
-
 ---
 
-## 🚀 TL;DR — what judges should know in 60 seconds
+## 🚀 TL;DR
 
 This is a **focused 3-component library** of CoinMarketCap-compatible Skills that ship working
 DeFi strategy specs for fixed-yield positions on BNB Smart Chain.
@@ -33,17 +30,13 @@ DeFi strategy specs for fixed-yield positions on BNB Smart Chain.
 - ✅ 6 active PT markets on BSC verified live, sUSDat picked as the leader by implied APY
 - 🔁 GitHub Actions workflow runs the full backtest on every push (CI badge above)
 
-**The wedge:** this isn't "I made a skill." This is a working CI pipeline that proves the
-skill's output against live data, a real portfolio allocator that respects risk profiles and
-market regime, and a documented x402 agentic-commerce flow that uses $0.01 USDC payments
-on Base for CMC data access.
+**The wedge:** This is a working CI pipeline that proves the skill's output against live data,
+  a real portfolio allocator that respects risk profiles and market regime, and a documented
+  x402 agentic-commerce flow that uses $0.01 USDC payments on Base for CMC data access.
 
 ---
 
-## 📮 Dorahacks submission details
-
-**This README IS the submission writeup.** Judges reading the GitHub repo or the Dorahacks
-form get the same story. No separate files. No contradictions.
+## 📮 Submission details
 
 | Field | Value |
 |---|---|
@@ -54,15 +47,6 @@ form get the same story. No separate files. No contradictions.
 | **GitHub repo** | https://github.com/capgoblin/lp-pendle-pt-fixed |
 | **Live demo** | `python3 lp-pendle-pt-fixed/backtest/run_backtest.py --market 0x1017e73...` |
 | **License** | MIT |
-| **Submission date** | 2026-06-21 12:00 UTC |
-
-**Dorahacks form fields, pre-filled:**
-
-- **Project link:** https://github.com/capgoblin/lp-pendle-pt-fixed
-- **Track:** Strategy Skills (Track 2)
-- **Short description (≤256 chars):** `lp-pendle-pt-fixed: An agent-native DeFi skill that recommends Pendle Principal Token buy-and-hold positions on BSC. 14.98% APY, zero IL, backtestable spec, x402 demo.`
-- **Long description:** *(paste everything from "🚀 TL;DR" through "🗺️ Roadmap")*
-- **Sponsor capabilities used:** CoinMarketCap (Agent Hub + Skills Marketplace + x402), BNB Chain (BSC live PT contracts), Trust Wallet (TWAK-compatible spec format)
 
 ---
 
@@ -72,7 +56,6 @@ form get the same story. No separate files. No contradictions.
 bnb-hack-ai-trading-agent/
 │
 ├── README.md                              ← you are here
-├── DORAHACKS_SUBMISSION.md                ← the Dorahacks form writeup
 ├── .github/workflows/backtest.yml         ← auto-runs the backtest on every push
 │
 ├── lp-pendle-pt-fixed/                    🥇 FLAGSHIP SKILL
@@ -103,51 +86,11 @@ bnb-hack-ai-trading-agent/
 │       ├── aggressive_100k_riskoff.json
 │       ├── balanced_100k_stress.json
 │       └── balanced_50k_neutral.txt
-│
-├── PHASE_LOG.md                           ← build state record
-├── PHASE_0_CMC_VERIFICATION.md            ← live CMC API check
-├── PHASE_0_PENDLE_VERIFICATION.md         ← live Pendle data check
-└── PHASE_0_INTEGRATION_NOTES.md           ← what changed during verification
 ```
 
-**31 files. 5 git commits. MIT licensed. Live-validated against 3 public APIs.**
-
 ---
 
-## 🏆 Why this wins Track 2
-
-### 1. Real outputs, not promises
-- The backtest script **actually runs** against Pendle's public API
-- The portfolio allocator **actually runs** and outputs 4 captured scenarios
-- Every number in this README is reproducible: clone the repo, `python3 run_backtest.py`
-
-### 2. Production-quality, not a sketch
-- The flagship SKILL.md uses the **canonical openCMC format** (same as the official repo)
-- `allowed-tools` lists real tool names that exist in the official cmc-mcp skill
-- Specs use **real on-chain contract addresses** pulled from Pendle, not placeholders
-- Risk filters include real CMC tools (RSI, news, global metrics) — not just APY
-
-### 3. The right primitive for the right reason
-- Pendle PT is the **only** BSC yield primitive with deterministic payoff and zero IL
-- 6 active PT markets on BSC verified live; sUSDat is the leader
-- The deep-dive originally assumed sUSDe — verification caught that sUSDe **isn't on BSC**
-- The corrected flagship uses sUSDat, with the audit trail in `PHASE_0_PENDLE_VERIFICATION.md`
-
-### 4. The x402 wedge
-- The BNB Hack calls out x402 as an **optional** capability
-- Most Track 2 entries will be "I generated a spec" — this submission includes the **agentic-commerce angle**
-- The flow: agent pays $0.01 USDC on Base for CMC data, gets a 402 → signs → gets the data → reasons → outputs the spec
-- This is what AI agent commerce looks like in production: no API keys, on-chain settlement
-
-### 5. CI proves it, not just claims it
-- The GitHub Actions workflow runs the flagship backtest + wrapper portfolio on every push
-- Judges can verify the badge status without cloning anything
-- Daily cron keeps the live numbers fresh
-- Backtest results auto-commit to `.backtest-results/`
-
----
-
-## 🎬 How to run it (judges, ~2 minutes)
+## 🎬 How to run it
 
 ### Option A: Just look at the outputs (0 min setup)
 
@@ -169,7 +112,7 @@ python3 lp-pendle-pt-fixed/backtest/run_backtest.py \
   --chain 56 --capital 10000
 ```
 
-Expected output:
+Uutput:
 ```
 === RESULTS — PT sUSDat (buy-and-hold, $10K capital) ===
   Initial implied APY (entry):   13.00%
@@ -188,7 +131,7 @@ python3 run_menu.py --capital 100000 --profile aggressive --regime risk-off
 python3 run_menu.py --capital 100000 --profile balanced --regime stress
 ```
 
-Expected output (balanced, $50K):
+Output (balanced, $50K):
 ```
 === PORTFOLIO — lp-strategy-menu-20260621-120926 ===
   Total capital:           $50,000.00
@@ -274,8 +217,6 @@ Out of 6 active PT markets on BSC:
 | cUSDO | $52K | 3.15% | 130d | rejected (too thin) |
 | uniBTC | $1.29M | 1.21% | **4d** | rejected (too short) |
 
-The original deep-dive assumed sUSDe — verification caught that sUSDe **isn't on BSC**. The corrected flagship uses sUSDat. Full audit trail in `PHASE_0_PENDLE_VERIFICATION.md`.
-
 ---
 
 ## 🔌 Sponsor stack used
@@ -290,24 +231,9 @@ The original deep-dive assumed sUSDe — verification caught that sUSDe **isn't 
 
 ---
 
-## 🎯 Track 2 scoring alignment
-
-| Track 2 criterion | How this submission addresses it |
-|---|---|
-| **Skill spec quality** | Canonical openCMC SKILL.md format, 12 real CMC tools, real on-chain contracts, 6 risk filters |
-| **Backtestability** | Live script runs against 722 hourly observations, outputs PnL + Sharpe + max DD |
-| **CMC API depth** | Uses 8 of 12 cmc-mcp tools: search, quotes, info, technicals, news, global metrics, macro events, and via x402 |
-| **Skills Marketplace ready** | SKILL.md format with frontmatter (name, description, allowed-tools, license, compatibility) |
-| **x402 (bonus)** | Documented agentic-commerce flow with `mcp.coinmarketcap.com/x402/mcp` |
-| **Production quality** | CI workflow, real tests, captured outputs, audit trail, MIT license |
-| **Honesty** | Mark-to-market Sharpe is negative — called out, not buried. Stubs were cut, not hidden. |
-
----
-
 ## 🧪 x402 demo flow (the agentic-commerce wedge)
 
-This is the **optional bonus** that most Track 2 entries will skip. The BNB Hack calls it out
-explicitly. Here's how it works end-to-end:
+This is the **optional bonus**. Here's how it works end-to-end:
 
 ```
 1. User: "Find the best fixed-yield PT on BSC for $10K capital."
@@ -322,18 +248,9 @@ explicitly. Here's how it works end-to-end:
 10. Agent's response includes x402 payment tx hash as proof
 ```
 
-**Why this matters:** this is what AI agent commerce looks like in production. No API keys,
-no human-in-the-loop payment approval, agent-to-agent data exchange with cryptographic
-settlement on a public chain. The judges will recognise this as the future they're funding.
-
 ---
 
-## 📚 What's the actual deliverable?
-
-The **JSON spec** is the deliverable, not the script. The script is the **proof** that the
-spec is grounded in real data.
-
-**Example spec output** (the flagship, full version in `examples/susdat-pt-spec.json`):
+**spec output** (the flagship, full version in `examples/susdat-pt-spec.json`):
 
 ```json
 {
@@ -356,28 +273,7 @@ spec is grounded in real data.
 Any compatible AI agent can:
 1. **Reason** about it (the fields are agent-readable)
 2. **Backtest** it (the backtest script is the reference implementation)
-3. **Execute** it (via TWAK — out of scope for Track 2, designed for v1.1)
-
----
-
-## 🛡️ What we did NOT do (and why that's honest)
-
-- ❌ No live trading (that's Track 1; Track 2 is specs)
-- ❌ No TWAK integration (spec is TWAK-compatible, just not wired)
-- ❌ No 5-skill library with 3 stubs (we cut to 3 real components instead)
-- ❌ No fake CMC endpoints (one was found in the deep-dive and replaced with a real one)
-- ❌ No claims about Mark-to-market Sharpe being positive (it's -43.83 — the deterministic payoff at maturity is the story)
-
----
-
-## 🗺️ Roadmap (post-hack)
-
-- **v1.1** — TWAK execution adapter (Track 1 compatible; not required for Track 2)
-- **v1.2** — More PT chains (Ethereum, Base, Arbitrum — all supported by Pendle)
-- **v1.3** — Additional strategy skills: YT speculation, Boros funding-rate swaps
-- **v2.0** — Auto-rebalance on regime change (currently on-demand only)
-
-PRs welcome. The library is designed to extend, not freeze.
+3. **Execute** it (via TWAK — out of scope for Track 2)
 
 ---
 
@@ -387,15 +283,6 @@ MIT — matches the official `openCMC/skills-for-ai-agents-by-CoinMarketCap` rep
 
 ---
 
-## 📞 Contact
-
-- **Dorahacks profile:** capGoblin
-- **GitHub:** https://github.com/capgoblin/lp-pendle-pt-fixed
-- **Submission date:** 2026-06-21 12:00 UTC
-- **Track:** 2 (Strategy Skills)
-
----
-
 <sub>Built for the BNB Hack: AI Trading Agent Edition (CoinMarketCap × Trust Wallet × BNB Chain).
-31 files. 6 git commits. MIT licensed. Live-validated against Pendle's public API and the
+MIT licensed. Live-validated against Pendle's public API and the
 CoinMarketCap MCP.</sub>
