@@ -1,0 +1,98 @@
+name: Backtest
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  schedule:
+    # Re-run daily at 00:00 UTC to keep the live numbers fresh
+    - cron: "0 0 * * *"
+  workflow_dispatch:
+
+jobs:
+  flagship-backtest:
+    name: Flagship backtest (sUSDat)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run backtest on sUSDat
+        working-directory: lp-pendle-pt-fixed/backtest
+        run: |
+          python3 run_backtest.py --market 0x1017e73ce9c219164ce841a980136eb023c55387 --chain 56 --capital 10000 --json > backtest_susdat_result.json
+          python3 run_backtest.py --market 0x1017e73ce9c219164ce841a980136eb023c55387 --chain 56 --capital 10000 > backtest_susdat_output.txt
+      - name: Save backtest artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: flagship-backtest-${{ github.run_id }}
+          path: |
+            lp-pendle-pt-fixed/backtest/backtest_susdat_result.json
+            lp-pendle-pt-fixed/backtest/backtest_susdat_output.txt
+      - name: Update latest.json in repo
+        run: |
+          mkdir -p .backtest-results
+          cp lp-pendle-pt-fixed/backtest/backtest_susdat_result.json .backtest-results/latest-susdat.json
+          # Add a small meta file with timestamp and run info
+          cat > .backtest-results/meta-susdat.json <<EOF
+          {
+            "market": "PT-sUSDat",
+            "market_address": "0x1017e73ce9c219164ce841a980136eb023c55387",
+            "chain": "bsc",
+            "chain_id": 56,
+            "last_run_utc": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+            "github_run_id": "${{ github.run_id }}",
+            "github_run_number": "${{ github.run_number }}",
+            "github_sha": "${{ github.sha }}",
+            "github_ref": "${{ github.ref }}"
+          }
+          EOF
+      - name: Commit backtest results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .backtest-results/
+          git commit -m "backtest: refresh sUSDat backtest results (${{ github.sha }})" || echo "No changes to commit"
+          git push || echo "Push failed (expected on PRs from forks)"
+
+  wrapper-portfolio:
+    name: Wrapper portfolio (balanced)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Run portfolio allocator
+        working-directory: lp-strategy-menu
+        run: |
+          python3 run_menu.py --capital 50000 --profile balanced --json > examples/balanced_50k_neutral.json
+          python3 run_menu.py --capital 25000 --profile conservative --json > examples/conservative_25k_neutral.json
+          python3 run_menu.py --capital 100000 --profile aggressive --regime risk-off --json > examples/aggressive_100k_riskoff.json
+          python3 run_menu.py --capital 100000 --profile balanced --regime stress --json > examples/balanced_100k_stress.json
+          python3 run_menu.py --capital 50000 --profile balanced > examples/balanced_50k_neutral.txt
+      - name: Save portfolio artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: wrapper-portfolio-${{ github.run_id }}
+          path: lp-strategy-menu/examples/
+
+  list-markets:
+    name: List all active BSC PT markets
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: List active markets
+        working-directory: lp-pendle-pt-fixed/backtest
+        run: python3 run_backtest.py --list

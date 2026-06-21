@@ -5,6 +5,14 @@
 **Operator:** capGoblin (solo builder)
 **Author of skill specs:** Sambar (CMC + Pendle data, verified live 2026-06-21)
 
+![Backtest](https://github.com/capgoblin/lp-pendle-pt-fixed/actions/workflows/backtest.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![Track 2](https://img.shields.io/badge/BNB%20Hack-Track%202-blue)
+
+> **Live verification:** every push to `main` runs the flagship backtest and the portfolio
+> allocator against Pendle's live API. The badge above shows the current status. Last run
+> results are auto-committed to `.backtest-results/`.
+
 ---
 
 ## What this is
