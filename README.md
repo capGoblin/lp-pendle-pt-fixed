@@ -2,7 +2,7 @@
 
 ### Agent-native CoinMarketCap Skill that recommends Pendle Principal Token positions on BSC. Fixed yield, zero impermanent loss, backtestable spec, x402 demo.
 
-![Backtest](https://github.com/capgoblin/lp-pendle-pt-fixed/actions/workflows/backtest.yml/badge.svg)
+![Backtest](https://github.com/capGoblin/lp-pendle-pt-fixed/workflows/Backtest/badge.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
 ![CoinMarketCap](https://img.shields.io/badge/Sponsor-CoinMarketCap-00d4ff)
 ![BNB Chain](https://img.shields.io/badge/Sponsor-BNB%20Chain-f3ba2f)
