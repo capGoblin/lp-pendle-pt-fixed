@@ -1,4 +1,4 @@
-# lp-pendle-pt-fixed
+# LP Pendle PT Agent Skill: lp-pendle-pt-fixed
 
 ### Agent-native CoinMarketCap Skill that recommends Pendle Principal Token positions on BSC. Fixed yield, zero impermanent loss, backtestable spec, x402 demo.
 
